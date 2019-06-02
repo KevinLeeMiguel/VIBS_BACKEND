@@ -18,6 +18,10 @@ public class Vehicle implements Serializable {
     private String plateNo;
     private String document;
     private String ownerReferenceId;
+    private String vin;
+    private String make;
+    private String model;
+    private long year;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
     private Date doneAt = new Date();
@@ -27,7 +31,7 @@ public class Vehicle implements Serializable {
     private Date lastUpdatedAt; // = null;
     @JsonIgnore
     private String lastUpdatedBy = "";
-
+    
     public static long getSerialversionuid() {
         return serialVersionUID;
     }
@@ -102,6 +106,38 @@ public class Vehicle implements Serializable {
 
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public String getVin() {
+        return vin;
+    }
+
+    public void setVin(String vin) {
+        this.vin = vin;
+    }
+
+    public String getMake() {
+        return make;
+    }
+
+    public void setMake(String make) {
+        this.make = make;
+    }
+
+    public String getModel() {
+        return model;
+    }
+
+    public void setModel(String model) {
+        this.model = model;
+    }
+
+    public long getYear() {
+        return year;
+    }
+
+    public void setYear(long year) {
+        this.year = year;
     }
     
 }
