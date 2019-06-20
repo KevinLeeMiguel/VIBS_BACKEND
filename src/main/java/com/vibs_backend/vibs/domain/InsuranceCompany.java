@@ -13,9 +13,7 @@ import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
-@EntityListeners(AuditingEntityListener.class)
 public class InsuranceCompany implements Serializable {
     
     private static final long serialVersionUID = 1L;
@@ -213,12 +211,6 @@ public class InsuranceCompany implements Serializable {
             this.autoUsages = autoUsages;
         }
 
-    @Override
-    public String toString() {
-        return "InsuranceCompany [ deletedStatus="
-                + deletedStatus + ", description=" + description + ", doneAt=" + doneAt + ", doneBy=" + doneBy
-                + ", email=" + email + ", id=" + id + ", lastUpdatedAt=" + lastUpdatedAt + ", lastUpdatedBy="
-                + lastUpdatedBy + ", name=" + name + ", phone=" + phone + ", tin=" + tin + "]";
-    }
+    
 
 }

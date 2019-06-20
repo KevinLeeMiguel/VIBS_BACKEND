@@ -2,6 +2,7 @@ package com.vibs_backend.vibs.controller;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -29,18 +30,18 @@ public class AutoUsageController {
     private IAutoUsageService auService;
     @Autowired
     private IinsuranceCompanyService icService;
-    
-    @PostMapping(value="/insurancecompanies/{id}/autousages/save",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> create(@PathVariable String id, @RequestBody AutoUsage au, HttpServletRequest request) {
+
+    @PostMapping(value = "/insurancecompanies/{id}/autousages/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> create(@PathVariable String id, @RequestBody AutoUsage au,
+            HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            InsuranceCompany ic = icService.findOne(id);
+            Optional<InsuranceCompany> ic = icService.findOne(id);
             AutoUsage atn = auService.findByNameAndCompanyId(au.getName(),id);
-            if(ic!=null){
+            if(ic.isPresent()){
                 if(atn == null){
-
                     String username = request.getHeader("doneBy");
-                    au.setCompany(ic);
+                    au.setCompany(ic.get());
                     au.setDoneBy(username);
                     au.setLastUpdatedAt(new Date());
                     au.setLastUpdatedBy(username);
@@ -68,8 +69,8 @@ public class AutoUsageController {
     public ResponseEntity<Object> getAutoUsagesByCompany(@PathVariable String id,HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            InsuranceCompany ic = icService.findOne(id);
-            if(ic!=null){
+            Optional<InsuranceCompany> ic = icService.findOne(id);
+            if(ic.isPresent()){
                 List<AutoUsage> types = auService.findAllByCompanyId(id);
                 rs.setCode(200);
                 rs.setDescription("success");

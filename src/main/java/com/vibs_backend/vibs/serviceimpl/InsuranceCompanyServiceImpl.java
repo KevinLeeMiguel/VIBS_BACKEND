@@ -1,6 +1,7 @@
 package com.vibs_backend.vibs.serviceimpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.InsuranceCompanyDao;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
@@ -32,8 +33,9 @@ public class InsuranceCompanyServiceImpl implements IinsuranceCompanyService {
     }
 
     @Override
-    public InsuranceCompany findOne(String id) {
-        return dao.getOne(id);
+    public Optional<InsuranceCompany> findOne(String id) {
+        Optional<InsuranceCompany> ic = dao.findById(id);
+        return ic;
     }
 
     @Override

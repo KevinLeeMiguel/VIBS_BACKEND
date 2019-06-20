@@ -101,6 +101,4 @@ public class SubscriptionType implements Serializable {
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
     }
-
-    
 }

@@ -4,6 +4,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -24,8 +25,6 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
-
-
 @RestController
 public class AutoTypeController {
 
@@ -33,18 +32,19 @@ public class AutoTypeController {
     private IAutoTypeService atService;
     @Autowired
     private IinsuranceCompanyService icService;
-    
-    @PostMapping(value="/insurancecompanies/{id}/autotypes/save",consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Object> create(@PathVariable String id, @RequestBody AutoType at, HttpServletRequest request) {
+
+    @PostMapping(value = "/insurancecompanies/{id}/autotypes/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity<Object> create(@PathVariable String id, @RequestBody AutoType at,
+            HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            InsuranceCompany ic = icService.findOne(id);
+            Optional<InsuranceCompany> ic = icService.findOne(id);
             AutoType atn = atService.findByNameAndCompanyId(at.getName(),id);
-            if(ic!=null){
+            if(ic.isPresent()){
                 if(atn == null){
 
                     String username = request.getHeader("doneBy");
-                    at.setCompany(ic);
+                    at.setCompany(ic.get());
                     at.setDoneBy(username);
                     at.setLastUpdatedAt(new Date());
                     at.setLastUpdatedBy(username);
@@ -72,8 +72,8 @@ public class AutoTypeController {
     public ResponseEntity<Object> getAutoTypesByCompany(@PathVariable String id,HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            InsuranceCompany ic = icService.findOne(id);
-            if(ic!=null){
+            Optional<InsuranceCompany> ic = icService.findOne(id);
+            if(ic.isPresent()){
                 List<AutoType> types = atService.findAllByCompanyId(id);
                 rs.setCode(200);
                 rs.setDescription("success");

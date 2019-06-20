@@ -10,6 +10,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
@@ -90,6 +91,33 @@ public class InsuranceCompanyController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
+        /**
+     * method to get insurance company by id
+     * 
+     * @return
+     */
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Object> getCompany(@PathVariable String id) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<InsuranceCompany> ic = icService.findOne(id);
+            if(ic.isPresent()){
+                rs.setCode(200);
+                rs.setDescription("");
+                rs.setObject(ic.get());
+            }else{
+                rs.setCode(404);
+                rs.setDescription("Insurance company not found");
+                rs.setObject(null);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(500);
+            rs.setDescription("Error occured while fetching Insurance Companies");
+            rs.setObject(null);
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
     /**
      * Method to delete an insurance company
      * 
@@ -100,14 +128,14 @@ public class InsuranceCompanyController {
     public ResponseEntity<Object> deleteCompany(@PathVariable String id) {
         ResponseBean rs = new ResponseBean();
         try {
-            InsuranceCompany ic = icService.findOne(id);
-            if (ic != null) {
+            Optional<InsuranceCompany> ic = icService.findOne(id);
+            if (ic.isPresent()) {
                 DeletedItem di = new DeletedItem();
                 byte[] data = ObjectToByteArray(ic);
                 di.setItem(data);
                 di.setName(ic.getClass().getName());
                 diService.create(di);
-                InsuranceCompany icc = icService.delete(ic);
+                InsuranceCompany icc = icService.delete(ic.get());
                 rs.setCode(200);
                 rs.setDescription("success");
                 rs.setObject(icc);
@@ -177,10 +205,10 @@ public class InsuranceCompanyController {
         ResponseBean rs = new ResponseBean();
         try {
             String username = request.getHeader("doneBy");
-            InsuranceCompany ico = icService.findOne(id);
-            if (ico != null) {
+            Optional<InsuranceCompany> ico = icService.findOne(id);
+            if (ico.isPresent()) {
                 ic.setDoneBy(username);
-                ic.setId(ico.getId());
+                ic.setId(ico.get().getId());
                 ic.setLastUpdatedAt(new Date());
                 ic.setLastUpdatedBy(username);
                 InsuranceCompany icd = icService.update(ic);
