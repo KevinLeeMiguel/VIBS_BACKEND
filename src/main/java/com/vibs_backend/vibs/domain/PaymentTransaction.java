@@ -2,22 +2,22 @@ package com.vibs_backend.vibs.domain;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-@Entity
-public class SubscriptionType implements Serializable {
 
+@Entity
+public class PaymentTransaction implements Serializable {
+    
     private static final long serialVersionUID = 1L;
     @Id
-    private String id = UUID.randomUUID().toString();
-    private String name;
-    private String description;
-    private String document;
+    private String id;
+    @ManyToOne
+    private Subscription subscription;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
     private Date doneAt = new Date();
@@ -27,80 +27,108 @@ public class SubscriptionType implements Serializable {
     private Date lastUpdatedAt; // = null;
     @JsonIgnore
     private String lastUpdatedBy = "";
+    
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
+    /**
+     * @return String return the id
+     */
     public String getId() {
         return id;
     }
 
+    /**
+     * @param id the id to set
+     */
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    /**
+     * @return Subscription return the subscription
+     */
+    public Subscription getSubscription() {
+        return subscription;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    /**
+     * @param subscription the subscription to set
+     */
+    public void setSubscription(Subscription subscription) {
+        this.subscription = subscription;
     }
 
-    public String getDescription() {
-        return description;
+    /**
+     * @return Boolean return the deletedStatus
+     */
+    public Boolean isDeletedStatus() {
+        return deletedStatus;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    /**
+     * @param deletedStatus the deletedStatus to set
+     */
+    public void setDeletedStatus(Boolean deletedStatus) {
+        this.deletedStatus = deletedStatus;
     }
 
-    public String getDocument() {
-        return document;
+    /**
+     * @return Date return the doneAt
+     */
+    public Date getDoneAt() {
+        return doneAt;
     }
 
-    public void setDocument(String document) {
-        this.document = document;
+    /**
+     * @param doneAt the doneAt to set
+     */
+    public void setDoneAt(Date doneAt) {
+        this.doneAt = doneAt;
+    }
+
+    /**
+     * @return String return the doneBy
+     */
+    public String getDoneBy() {
+        return doneBy;
+    }
+
+    /**
+     * @param doneBy the doneBy to set
+     */
+    public void setDoneBy(String doneBy) {
+        this.doneBy = doneBy;
+    }
+
+    /**
+     * @return Date return the lastUpdatedAt
+     */
+    public Date getLastUpdatedAt() {
+        return lastUpdatedAt;
+    }
+
+    /**
+     * @param lastUpdatedAt the lastUpdatedAt to set
+     */
+    public void setLastUpdatedAt(Date lastUpdatedAt) {
+        this.lastUpdatedAt = lastUpdatedAt;
+    }
+
+    /**
+     * @return String return the lastUpdatedBy
+     */
+    public String getLastUpdatedBy() {
+        return lastUpdatedBy;
+    }
+
+    /**
+     * @param lastUpdatedBy the lastUpdatedBy to set
+     */
+    public void setLastUpdatedBy(String lastUpdatedBy) {
+        this.lastUpdatedBy = lastUpdatedBy;
     }
 
     public Boolean getDeletedStatus() {
         return deletedStatus;
     }
 
-    public void setDeletedStatus(Boolean deletedStatus) {
-        this.deletedStatus = deletedStatus;
-    }
-
-    public Date getDoneAt() {
-        return doneAt;
-    }
-
-    public void setDoneAt(Date doneAt) {
-        this.doneAt = doneAt;
-    }
-
-    public String getDoneBy() {
-        return doneBy;
-    }
-
-    public void setDoneBy(String doneBy) {
-        this.doneBy = doneBy;
-    }
-
-    public Date getLastUpdatedAt() {
-        return lastUpdatedAt;
-    }
-
-    public void setLastUpdatedAt(Date lastUpdatedAt) {
-        this.lastUpdatedAt = lastUpdatedAt;
-    }
-
-    public String getLastUpdatedBy() {
-        return lastUpdatedBy;
-    }
-
-    public void setLastUpdatedBy(String lastUpdatedBy) {
-        this.lastUpdatedBy = lastUpdatedBy;
-    }
 }

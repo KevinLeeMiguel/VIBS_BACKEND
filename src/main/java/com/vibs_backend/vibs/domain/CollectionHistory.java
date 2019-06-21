@@ -7,17 +7,20 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-@Entity
-public class SubscriptionType implements Serializable {
 
+@Entity
+public class CollectionHistory implements Serializable{
     private static final long serialVersionUID = 1L;
     @Id
     private String id = UUID.randomUUID().toString();
-    private String name;
-    private String description;
-    private String document;
+    private double amount;
+    private double balance;
+    private String transactionReferenceId;
+    @ManyToOne
+    private CollectionAccount collectionAccount;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
     private Date doneAt = new Date();
@@ -28,40 +31,44 @@ public class SubscriptionType implements Serializable {
     @JsonIgnore
     private String lastUpdatedBy = "";
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public String getId() {
         return id;
+    }
+
+    public String getTransactionReferenceId() {
+        return transactionReferenceId;
+    }
+
+    public void setTransactionReferenceId(String transactionReferenceId) {
+        this.transactionReferenceId = transactionReferenceId;
     }
 
     public void setId(String id) {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public double getAmount() {
+        return amount;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setAmount(double amount) {
+        this.amount = amount;
     }
 
-    public String getDescription() {
-        return description;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
-    public String getDocument() {
-        return document;
+    public CollectionAccount getCollectionAccount() {
+        return collectionAccount;
     }
 
-    public void setDocument(String document) {
-        this.document = document;
+    public void setCollectionAccount(CollectionAccount collectionAccount) {
+        this.collectionAccount = collectionAccount;
     }
 
     public Boolean getDeletedStatus() {
@@ -103,4 +110,6 @@ public class SubscriptionType implements Serializable {
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
     }
+
+    
 }

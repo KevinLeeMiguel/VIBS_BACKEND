@@ -7,17 +7,18 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-@Entity
-public class SubscriptionType implements Serializable {
 
+@Entity
+public class CollectionAccount implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String id = UUID.randomUUID().toString();
-    private String name;
-    private String description;
-    private String document;
+    private double balance = 0.0;
+    @OneToOne
+    private InsuranceCompany company;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
     private Date doneAt = new Date();
@@ -28,10 +29,6 @@ public class SubscriptionType implements Serializable {
     @JsonIgnore
     private String lastUpdatedBy = "";
 
-    public static long getSerialversionuid() {
-        return serialVersionUID;
-    }
-
     public String getId() {
         return id;
     }
@@ -40,28 +37,20 @@ public class SubscriptionType implements Serializable {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public double getBalance() {
+        return balance;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setBalance(double balance) {
+        this.balance = balance;
     }
 
-    public String getDescription() {
-        return description;
+    public InsuranceCompany getCompany() {
+        return company;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public String getDocument() {
-        return document;
-    }
-
-    public void setDocument(String document) {
-        this.document = document;
+    public void setCompany(InsuranceCompany company) {
+        this.company = company;
     }
 
     public Boolean getDeletedStatus() {
@@ -103,4 +92,7 @@ public class SubscriptionType implements Serializable {
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
     }
+
+    
+
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
+import javax.persistence.OneToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -17,18 +17,19 @@ public class Subscription implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     private String id = UUID.randomUUID().toString();
-    private AutoType vehicleType;
-    private AutoUsage vehicleUsage;
     private long days;
     private Date startDate;
     private Date endDate;
+    private boolean active;
     private double price;
+    @OneToOne
     private AutoUsage autoUsage;
+    @OneToOne
     private AutoType autoType;
+    @OneToOne
     private SubscriptionType type;
-    @ManyToOne
-    private InsuranceCompany company;
-    @ManyToOne
+    private String companyReferenceId;
+    @OneToOne
     private Vehicle vehicle;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
@@ -58,22 +59,6 @@ public class Subscription implements Serializable {
 
     public void setId(String id) {
         this.id = id;
-    }
-
-    public AutoType getVehicleType() {
-        return vehicleType;
-    }
-
-    public void setVehicleType(AutoType vehicleType) {
-        this.vehicleType = vehicleType;
-    }
-
-    public AutoUsage getVehicleUsage() {
-        return vehicleUsage;
-    }
-
-    public void setVehicleUsage(AutoUsage vehicleUsage) {
-        this.vehicleUsage = vehicleUsage;
     }
 
     public long getDays() {
@@ -162,14 +147,6 @@ public class Subscription implements Serializable {
 
     public void setType(SubscriptionType type) {
         this.type = type;
-    }
-
-    public InsuranceCompany getCompany() {
-        return company;
-    }
-
-    public void setCompany(InsuranceCompany company) {
-        this.company = company;
     }
 
     public Vehicle getVehicle() {
