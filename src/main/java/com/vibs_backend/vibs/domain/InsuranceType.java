@@ -7,10 +7,11 @@ import java.util.UUID;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToOne;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 @Entity
-public class SubscriptionType implements Serializable {
+public class InsuranceType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -19,6 +20,8 @@ public class SubscriptionType implements Serializable {
     private String description;
     private String document;
     private Boolean deletedStatus = false;
+    @ManyToOne
+    private InsuranceCompany company;
     @Column(nullable = false, updatable = false)
     private Date doneAt = new Date();
     @JsonIgnore
@@ -102,5 +105,13 @@ public class SubscriptionType implements Serializable {
 
     public void setLastUpdatedBy(String lastUpdatedBy) {
         this.lastUpdatedBy = lastUpdatedBy;
+    }
+
+    public InsuranceCompany getCompany() {
+        return company;
+    }
+
+    public void setCompany(InsuranceCompany company) {
+        this.company = company;
     }
 }

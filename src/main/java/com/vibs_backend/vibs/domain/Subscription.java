@@ -27,7 +27,7 @@ public class Subscription implements Serializable {
     @OneToOne
     private AutoType autoType;
     @OneToOne
-    private SubscriptionType type;
+    private InsuranceType type;
     private String companyReferenceId;
     @OneToOne
     private Vehicle vehicle;
@@ -141,20 +141,36 @@ public class Subscription implements Serializable {
         this.autoType = autoType;
     }
 
-    public SubscriptionType getType() {
-        return type;
-    }
-
-    public void setType(SubscriptionType type) {
-        this.type = type;
-    }
-
     public Vehicle getVehicle() {
         return vehicle;
     }
 
     public void setVehicle(Vehicle vehicle) {
         this.vehicle = vehicle;
+    }
+
+    public boolean isActive() {
+        return active;
+    }
+
+    public void setActive(boolean active) {
+        this.active = active;
+    }
+
+    public InsuranceType getType() {
+        return type;
+    }
+
+    public void setType(InsuranceType type) {
+        this.type = type;
+    }
+
+    public String getCompanyReferenceId() {
+        return companyReferenceId;
+    }
+
+    public void setCompanyReferenceId(String companyReferenceId) {
+        this.companyReferenceId = companyReferenceId;
     }
 
 }
