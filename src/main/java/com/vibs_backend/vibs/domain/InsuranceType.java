@@ -15,11 +15,15 @@ public class InsuranceType implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(updatable = false)
     private String id = UUID.randomUUID().toString();
+    @Column(unique = true)
     private String name;
     private String description;
-    private String document;
+    @Column(columnDefinition = "TEXT")
+    private String termsAndConditions;
     private Boolean deletedStatus = false;
+    @JsonIgnore
     @ManyToOne
     private InsuranceCompany company;
     @Column(nullable = false, updatable = false)
@@ -57,14 +61,6 @@ public class InsuranceType implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getDocument() {
-        return document;
-    }
-
-    public void setDocument(String document) {
-        this.document = document;
     }
 
     public Boolean getDeletedStatus() {
@@ -113,5 +109,13 @@ public class InsuranceType implements Serializable {
 
     public void setCompany(InsuranceCompany company) {
         this.company = company;
+    }
+
+    public String getTermsAndConditions() {
+        return termsAndConditions;
+    }
+
+    public void setTermsAndConditions(String termsAndConditions) {
+        this.termsAndConditions = termsAndConditions;
     }
 }

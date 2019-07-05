@@ -5,11 +5,13 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.InsuranceTypeDao;
 import com.vibs_backend.vibs.domain.InsuranceType;
-import com.vibs_backend.vibs.service.IInsuranceTypesService;
+import com.vibs_backend.vibs.service.IinsuranceTypesService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class InsuranceTypeServiceImpl implements IInsuranceTypesService {
+@Service
+public class InsuranceTypeServiceImpl implements IinsuranceTypesService {
 
     @Autowired
     private InsuranceTypeDao dao;
@@ -41,7 +43,12 @@ public class InsuranceTypeServiceImpl implements IInsuranceTypesService {
 
     @Override
     public Optional<InsuranceType> findById(String typeId) {
-        return null;
+        return dao.findByIdAndDeletedStatus(typeId,false);
+    }
+
+    @Override
+    public Optional<InsuranceType> findByNameAndCompany(String name, String companyId) {
+        return dao.findByNameAndCompanyIdAndDeletedStatus(name, companyId, false);
     }
 
 }

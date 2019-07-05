@@ -15,6 +15,7 @@ public class PaymentTransaction implements Serializable {
     
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(updatable = false)
     private String id;
     @ManyToOne
     private Subscription subscription;

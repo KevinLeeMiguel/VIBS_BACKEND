@@ -5,11 +5,12 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.InsuranceType;
 
-public interface IInsuranceTypesService {
+public interface IinsuranceTypesService {
     public abstract InsuranceType create(InsuranceType it);
     public abstract InsuranceType update(InsuranceType it);
     public abstract InsuranceType delete(InsuranceType it);
     public abstract List<InsuranceType> findAll();
     public abstract List<InsuranceType> findByCompany(String companyId);
+    public abstract Optional<InsuranceType> findByNameAndCompany(String name,String companyId);
     public abstract Optional<InsuranceType> findById(String typeId);
 }

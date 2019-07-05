@@ -1,6 +1,7 @@
 package com.vibs_backend.vibs.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.InsuranceType;
 
@@ -14,4 +15,6 @@ public interface InsuranceTypeDao extends JpaRepository<InsuranceType,String> {
     }
     List<InsuranceType> findByCompanyIdAndDeletedStatus(String id,Boolean dStatus);
     List<InsuranceType> findByDeletedStatus(Boolean st);
+    Optional<InsuranceType> findByIdAndDeletedStatus(String id,Boolean st);
+    public Optional<InsuranceType> findByNameAndCompanyIdAndDeletedStatus(String name,String id,boolean deletedStatus);
 }

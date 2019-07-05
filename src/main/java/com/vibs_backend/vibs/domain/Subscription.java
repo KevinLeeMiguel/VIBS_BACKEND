@@ -16,6 +16,7 @@ public class Subscription implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @Column(updatable = false)
     private String id = UUID.randomUUID().toString();
     private long days;
     private Date startDate;
