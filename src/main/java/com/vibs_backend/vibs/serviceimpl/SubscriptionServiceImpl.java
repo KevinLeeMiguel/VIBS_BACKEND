@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.SubscriptionDao;
 import com.vibs_backend.vibs.domain.Subscription;
+import com.vibs_backend.vibs.domain.SubscriptionStatus;
 import com.vibs_backend.vibs.service.ISubscriptionService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,7 +28,7 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
 
     @Override
     public Subscription delete(Subscription s) {
-       return dao.deleted(s);
+        return dao.deleted(s);
     }
 
     @Override
@@ -48,5 +49,25 @@ public class SubscriptionServiceImpl implements ISubscriptionService {
     @Override
     public List<Subscription> findAllByVehicle(String id) {
         return dao.findByVehicleIdAndDeletedStatus(id, false);
+    }
+
+    @Override
+    public List<Subscription> findAllByCompanyAndStatus(String id, SubscriptionStatus status) {
+        return dao.findByCompanyReferenceIdAndStatusAndDeletedStatus(id, status, false);
+    }
+
+    @Override
+    public SubscriptionStatus getStatus(String status) {
+        for(SubscriptionStatus st : SubscriptionStatus.values()){
+            if(st.toString().equalsIgnoreCase(status)){
+                return st;
+            }
+        }
+        return null;
+    }
+
+    @Override
+    public List<Subscription> findAllByUsernameAndStatus(String username, SubscriptionStatus status) {
+        return dao.findByDoneByAndStatusAndDeletedStatus(username, status, false);
     }
 }

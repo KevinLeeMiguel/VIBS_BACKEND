@@ -30,8 +30,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestParam;
-
 
 @RestController
 @RequestMapping("/subscriptions")
@@ -77,23 +75,23 @@ public class SubscriptionController {
                                 rs.setCode(200);
                                 rs.setDescription("success");
                                 // rs.setObject(s);
-                            }else{
+                            } else {
                                 rs.setCode(404);
                                 rs.setDescription("invalid insurance type");
                             }
-                        }else{
+                        } else {
                             rs.setCode(404);
                             rs.setDescription("invalid Vehicle Usage");
                         }
-                    }else{
+                    } else {
                         rs.setCode(404);
                         rs.setDescription("invalid Vehicle Type");
                     }
-                }else{
+                } else {
                     rs.setCode(404);
                     rs.setDescription("Insurance company not found");
                 }
-            }else{
+            } else {
                 rs.setCode(404);
                 rs.setDescription("Vehicle not found");
             }
@@ -105,7 +103,7 @@ public class SubscriptionController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @GetMapping(value="/company/{id}/all")
+    @GetMapping(value = "/company/{id}/all")
     public ResponseEntity<Object> getAll(@PathVariable String id, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
@@ -118,15 +116,75 @@ public class SubscriptionController {
             rs.setCode(300);
             rs.setDescription("error occured");
         }
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
-    
 
+    @GetMapping(value = "/{id}")
+    public ResponseEntity<Object> getOneById(@PathVariable String id, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> li = sService.findById(id);
+            if (li.isPresent()) {
+                rs.setCode(200);
+                rs.setDescription("success");
+                rs.setObject(li.get());
+            } else {
+                rs.setCode(404);
+                rs.setDescription("Not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
 
+    @GetMapping(value = "/company/{id}/status/{status}")
+    public ResponseEntity<Object> getAllByCompanyAndStatus(@PathVariable String id, @PathVariable String status,
+            HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            SubscriptionStatus st = sService.getStatus(status);
+            if(st != null){
+                List<Subscription> li = sService.findAllByCompanyAndStatus(id, st);
+                rs.setCode(200);
+                rs.setDescription("success");
+                rs.setObject(li);
+            }else{
+                rs.setCode(404);
+                rs.setDescription("Invalid status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
 
-
-
-
+    @GetMapping(value = "/customer/{username}/status/{status}")
+    public ResponseEntity<Object> getAllByCustomerAndStatus(@PathVariable String username, @PathVariable String status,
+            HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            SubscriptionStatus st = sService.getStatus(status);
+            if(st != null){
+                List<Subscription> li = sService.findAllByUsernameAndStatus(username, st);
+                rs.setCode(200);
+                rs.setDescription("success");
+                rs.setObject(li);
+            }else{
+                rs.setCode(404);
+                rs.setDescription("Invalid status");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
     public static class SubscriptionReq {
         private Subscription sub;
         private String autoTypeId;
