@@ -132,4 +132,8 @@ public class PaymentTransaction implements Serializable {
         return deletedStatus;
     }
 
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
 }

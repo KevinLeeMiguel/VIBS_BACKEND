@@ -126,6 +126,8 @@ public class AutoTypeController {
             String username = request.getHeader("doneBy");
             AutoType at = atService.findById(id);
             if (at != null) {
+                at.setLastUpdatedAt(new Date());
+                at.setLastUpdatedBy(username);
                 atService.delete(at);
                 rs.setCode(200);
                 rs.setDescription("deleted successfully");

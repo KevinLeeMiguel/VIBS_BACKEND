@@ -20,6 +20,7 @@ public class Vehicle implements Serializable {
     private String document;
     private String ownerReferenceId;
     private String vin;
+    private int seats;
     private String make;
     private String model;
     private long year;
@@ -32,9 +33,17 @@ public class Vehicle implements Serializable {
     private Date lastUpdatedAt; // = null;
     @JsonIgnore
     private String lastUpdatedBy = "";
-    
+
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public int getSeats() {
+        return seats;
+    }
+
+    public void setSeats(int seats) {
+        this.seats = seats;
     }
 
     public String getOwnerReferenceId() {

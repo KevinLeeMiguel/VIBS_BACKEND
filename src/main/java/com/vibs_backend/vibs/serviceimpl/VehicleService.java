@@ -1,6 +1,7 @@
 package com.vibs_backend.vibs.serviceimpl;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.VehicleDao;
 import com.vibs_backend.vibs.domain.Vehicle;
@@ -32,8 +33,8 @@ public class VehicleService implements IVehicleService {
     }
 
     @Override
-    public Vehicle findById(String vehicleId) {
-        return dao.getOne(vehicleId);
+    public Optional<Vehicle> findById(String vehicleId) {
+        return dao.findByIdAndDeletedStatus(vehicleId, false);
     }
 
     @Override

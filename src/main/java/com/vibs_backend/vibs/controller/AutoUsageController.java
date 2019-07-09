@@ -123,6 +123,8 @@ public class AutoUsageController {
             String username = request.getHeader("doneBy");
             AutoUsage au = auService.findById(id);
             if (au != null) {
+                au.setLastUpdatedAt(new Date());
+                au.setLastUpdatedBy(username);
                 auService.delete(au);
                 rs.setCode(200);
                 rs.setDescription("deleted successfully");

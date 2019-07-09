@@ -6,6 +6,8 @@ import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
 
@@ -23,13 +25,17 @@ public class Subscription implements Serializable {
     private Date endDate;
     private boolean active;
     private double price;
+    // @JsonIgnore
     @OneToOne
     private AutoUsage autoUsage;
+    // @JsonIgnore
     @OneToOne
     private AutoType autoType;
+    // @JsonIgnore
     @OneToOne
     private InsuranceType type;
     private String companyReferenceId;
+    // @JsonIgnore
     @OneToOne
     private Vehicle vehicle;
     private Boolean deletedStatus = false;
@@ -41,9 +47,19 @@ public class Subscription implements Serializable {
     private Date lastUpdatedAt; // = null;
     @JsonIgnore
     private String lastUpdatedBy = "";
+    @Enumerated(EnumType.STRING)
+    private SubscriptionStatus status;
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public SubscriptionStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(SubscriptionStatus status) {
+        this.status = status;
     }
 
     public Boolean getDeletedStatus() {

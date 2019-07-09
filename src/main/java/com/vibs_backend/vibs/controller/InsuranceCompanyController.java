@@ -3,21 +3,14 @@ package com.vibs_backend.vibs.controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
+
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.vibs_backend.vibs.domain.DeletedItem;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
-import com.vibs_backend.vibs.service.IDeletedItemService;
 import com.vibs_backend.vibs.service.IinsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
@@ -37,8 +30,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class InsuranceCompanyController {
     @Autowired
     private IinsuranceCompanyService icService;
-    @Autowired
-    private IDeletedItemService diService;
+    // @Autowired
+    // private IDeletedItemService diService;
 
     /**
      * Method to create a new Insurance Company
@@ -91,7 +84,7 @@ public class InsuranceCompanyController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-        /**
+    /**
      * method to get insurance company by id
      * 
      * @return
@@ -101,11 +94,11 @@ public class InsuranceCompanyController {
         ResponseBean rs = new ResponseBean();
         try {
             Optional<InsuranceCompany> ic = icService.findOne(id);
-            if(ic.isPresent()){
+            if (ic.isPresent()) {
                 rs.setCode(200);
                 rs.setDescription("");
                 rs.setObject(ic.get());
-            }else{
+            } else {
                 rs.setCode(404);
                 rs.setDescription("Insurance company not found");
                 rs.setObject(null);
@@ -118,40 +111,6 @@ public class InsuranceCompanyController {
         }
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
-    /**
-     * Method to delete an insurance company
-     * 
-     * @param id
-     * @return
-     */
-    @DeleteMapping(value = "/delete/{id}")
-    public ResponseEntity<Object> deleteCompany(@PathVariable String id) {
-        ResponseBean rs = new ResponseBean();
-        try {
-            Optional<InsuranceCompany> ic = icService.findOne(id);
-            if (ic.isPresent()) {
-                DeletedItem di = new DeletedItem();
-                byte[] data = ObjectToByteArray(ic);
-                di.setItem(data);
-                di.setName(ic.getClass().getName());
-                diService.create(di);
-                InsuranceCompany icc = icService.delete(ic.get());
-                rs.setCode(200);
-                rs.setDescription("success");
-                rs.setObject(icc);
-            } else {
-                rs.setCode(404);
-                rs.setDescription("Company not found");
-                rs.setObject(null);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            rs.setCode(500);
-            rs.setDescription("An Error occured , please contact administrator");
-            rs.setObject(null);
-        }
-        return new ResponseEntity<>(rs, HttpStatus.OK);
-    }
 
     /**
      * Method to delete an insurance company
@@ -159,25 +118,18 @@ public class InsuranceCompanyController {
      * @param id
      * @return
      */
-    @DeleteMapping(value = "/recover/{id}")
-    public ResponseEntity<Object> recoverCompany(@PathVariable String id) {
+    @DeleteMapping(value = "/delete/{id}")
+    public ResponseEntity<Object> deleteCompany(@PathVariable String id,HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            DeletedItem di = diService.findOne(id);
-            if (di != null) {
-                Object ob = byteArrayToObject(di.getItem());
-                InsuranceCompany ic = new InsuranceCompany();
-                if (ob != null) {
-                    ObjectMapper obm = new ObjectMapper();
-                    // JsonNode jsn = obm.reader(Object );
-                    ic = (InsuranceCompany) ob;
-                    System.out.println("object is there");
-                } else {
-                    System.out.println("object is null");
-                }
+            String username = request.getHeader("doneBy");
+            Optional<InsuranceCompany> ic = icService.findOne(id);
+            if (ic.isPresent()) {
+                ic.get().setLastUpdatedAt(new Date());
+                ic.get().setLastUpdatedBy(username);
+                icService.delete(ic.get());
                 rs.setCode(200);
                 rs.setDescription("success");
-                rs.setObject(ic);
             } else {
                 rs.setCode(404);
                 rs.setDescription("Company not found");
@@ -230,38 +182,4 @@ public class InsuranceCompanyController {
 
     }
 
-    public static byte[] ObjectToByteArray(Object obj) {
-        try {
-
-            ByteArrayOutputStream bos = new ByteArrayOutputStream();
-            ObjectOutputStream oos = new ObjectOutputStream(bos);
-            oos.writeObject(obj);
-            oos.flush();
-            byte[] data = bos.toByteArray();
-            return data;
-        } catch (Exception e) {
-            e.printStackTrace();
-            return null;
-        }
-    }
-
-    public static Object byteArrayToObject(byte[] data) throws IOException, ClassNotFoundException {
-        Object obj = null;
-        ByteArrayInputStream bis = null;
-        ObjectInputStream ois = null;
-        try {
-            bis = new ByteArrayInputStream(data);
-            ois = new ObjectInputStream(bis);
-            obj = ois.readObject();
-        } finally {
-            if (bis != null) {
-                bis.close();
-            }
-            if (ois != null) {
-                ois.close();
-            }
-        }
-        return obj;
-
-    }
 }
