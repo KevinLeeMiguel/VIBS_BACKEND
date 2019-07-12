@@ -1,6 +1,8 @@
 package com.vibs_backend.vibs.controller;
 
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -30,6 +32,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PutMapping;
+
 
 @RestController
 @RequestMapping("/subscriptions")
@@ -184,6 +188,172 @@ public class SubscriptionController {
             rs.setDescription("error occured");
         }
         return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    @PutMapping(value="/{id}/approve")
+    public ResponseEntity<Object> approve(@PathVariable String id,@RequestBody approvalDetails ad,  HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> sub = sService.findById(id);
+            String username = request.getHeader("doneBy");
+            if(sub.isPresent()){
+                Subscription subb = sub.get();
+                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                    subb.setStatus(SubscriptionStatus.APPROVED);
+                    subb.setStartDate(ad.getStartDate());
+                    subb.setEndDate(ad.getEndDate());
+                    subb.setPrice(ad.getAmount());
+                    subb.setLastUpdatedBy(username);
+                    subb.setLastUpdatedAt(new Date());
+                    sService.update(subb);
+                    rs.setCode(200);
+                    rs.setDescription("subscription successfully approved");
+                }else{
+                    rs.setCode(400);
+                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                        rs.setDescription("subscription already approved");
+                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                        rs.setDescription("subscription was canceled");
+                    }else{
+                        rs.setDescription("subscription was rejected");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Internal error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @PutMapping(value="/{id}/reject")
+    public ResponseEntity<Object> reject(@PathVariable String id, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> sub = sService.findById(id);
+            String username = request.getHeader("doneBy");
+            if(sub.isPresent()){
+                Subscription subb = sub.get();
+                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                    subb.setStatus(SubscriptionStatus.REJECTED);
+                    subb.setLastUpdatedBy(username);
+                    subb.setLastUpdatedAt(new Date());
+                    sService.update(subb);
+                    rs.setCode(200);
+                    rs.setDescription("subscription successfully rejected");
+                }else{
+                    rs.setCode(400);
+                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                        rs.setDescription("subscription was approved");
+                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                        rs.setDescription("subscription was canceled");
+                    }else{
+                        rs.setDescription("subscription already rejected");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Internal error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @PutMapping(value="/{id}/cancel")
+    public ResponseEntity<Object> cancel(@PathVariable String id, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> sub = sService.findById(id);
+            String username = request.getHeader("doneBy");
+            if(sub.isPresent()){
+                Subscription subb = sub.get();
+                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                    subb.setStatus(SubscriptionStatus.CANCELED);
+                    subb.setLastUpdatedBy(username);
+                    subb.setLastUpdatedAt(new Date());
+                    sService.update(subb);
+                    rs.setCode(200);
+                    rs.setDescription("subscription successfully canceled");
+                }else{
+                    rs.setCode(400);
+                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                        rs.setDescription("subscription was approved");
+                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                        rs.setDescription("subscription already canceled");
+                    }else{
+                        rs.setDescription("subscription was rejected");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Internal error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @PutMapping(value="/{id}/pay")
+    public ResponseEntity<Object> pay(@PathVariable String id,@RequestBody Map<String,Object> map, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> sub = sService.findById(id);
+            String username = request.getHeader("doneBy");
+            if(sub.isPresent()){
+                Subscription subb = sub.get();
+                if(subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == false){
+                    subb.setLastUpdatedBy(username);
+                    subb.setLastUpdatedAt(new Date());
+                    subb.setPaymentStatus(true);
+                    subb.setQrCode((String) map.get("qr"));
+                    sService.update(subb);
+                    rs.setCode(200);
+                    rs.setDescription("subscription successfully paid");
+                }else{
+                    rs.setCode(400);
+                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == true){
+                        rs.setDescription("subscription was paid already");
+                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                        rs.setDescription("subscription already canceled");
+                    }else{
+                        rs.setDescription("subscription was rejected");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Internal error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+    public static class approvalDetails{
+        private Date startDate;
+        private Date endDate;
+        private double amount;
+
+        public Date getStartDate() {
+            return startDate;
+        }
+
+        public void setStartDate(Date startDate) {
+            this.startDate = startDate;
+        }
+
+        public Date getEndDate() {
+            return endDate;
+        }
+
+        public void setEndDate(Date endDate) {
+            this.endDate = endDate;
+        }
+
+        public double getAmount() {
+            return amount;
+        }
+
+        public void setAmount(double amount) {
+            this.amount = amount;
+        }
+         
     }
     public static class SubscriptionReq {
         private Subscription sub;

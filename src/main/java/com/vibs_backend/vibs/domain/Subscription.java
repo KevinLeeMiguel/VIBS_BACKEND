@@ -25,6 +25,9 @@ public class Subscription implements Serializable {
     private Date endDate;
     private boolean active;
     private double price;
+    private boolean paymentStatus = false;
+    @Column(columnDefinition = "TEXT")
+    private String qrCode;
     // @JsonIgnore
     @OneToOne
     private AutoUsage autoUsage;
@@ -52,6 +55,22 @@ public class Subscription implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getQrCode() {
+        return qrCode;
+    }
+
+    public void setQrCode(String qrCode) {
+        this.qrCode = qrCode;
+    }
+
+    public boolean isPaymentStatus() {
+        return paymentStatus;
+    }
+
+    public void setPaymentStatus(boolean paymentStatus) {
+        this.paymentStatus = paymentStatus;
     }
 
     public SubscriptionStatus getStatus() {

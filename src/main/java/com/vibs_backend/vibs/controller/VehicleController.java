@@ -4,12 +4,16 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vibs_backend.vibs.domain.Subscription;
 import com.vibs_backend.vibs.domain.Vehicle;
+import com.vibs_backend.vibs.service.ISubscriptionService;
 import com.vibs_backend.vibs.service.IVehicleService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
@@ -29,6 +33,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class VehicleController {
     @Autowired
     private IVehicleService vehicleService;
+    @Autowired
+    private ISubscriptionService sService;
 
     /**
      * Method to create a new Vehicle
@@ -187,4 +193,28 @@ public class VehicleController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
+    @GetMapping(value = "/details/{id}")
+    public ResponseEntity<Object> DetailsById(@PathVariable String id) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Vehicle> v = vehicleService.findById(id);
+            if (v.isPresent()) {
+                List<Subscription> li = sService.findAllByVehicle(v.get().getId());
+                Map<Object,Object> map = new HashMap<>();
+                map.put("vehicle",v.get());
+                map.put("subscription", li);
+                rs.setCode(200);
+                rs.setDescription("success");
+                rs.setObject(map);
+            }else{
+                rs.setCode(404);
+                rs.setDescription("vehicle not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("Error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
 }
