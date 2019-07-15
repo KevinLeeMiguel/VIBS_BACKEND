@@ -10,6 +10,8 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vibs_backend.vibs.dao.CollectionAccountDao;
+import com.vibs_backend.vibs.domain.CollectionAccount;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.service.IinsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
@@ -30,6 +32,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class InsuranceCompanyController {
     @Autowired
     private IinsuranceCompanyService icService;
+    @Autowired
+    private CollectionAccountDao cService;
     // @Autowired
     // private IDeletedItemService diService;
 
@@ -50,6 +54,11 @@ public class InsuranceCompanyController {
             ic.setLastUpdatedAt(new Date());
             ic.setLastUpdatedBy(username);
             InsuranceCompany icd = icService.create(ic);
+            CollectionAccount ca = new CollectionAccount();
+            ca.setBalance(0.0);
+            ca.setCompany(icd);
+            ca.setDoneBy(username);
+            cService.save(ca);
             rs.setCode(200);
             rs.setDescription("Saved successfully");
             rs.setObject(icd);

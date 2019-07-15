@@ -2,6 +2,7 @@ package com.vibs_backend.vibs.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,7 +17,9 @@ public class PaymentTransaction implements Serializable {
     private static final long serialVersionUID = 1L;
     @Id
     @Column(updatable = false)
-    private String id;
+    private String id = UUID.randomUUID().toString();
+    private String transactionReferenceId;
+    private double amount;
     @ManyToOne
     private Subscription subscription;
     private Boolean deletedStatus = false;
@@ -28,13 +31,28 @@ public class PaymentTransaction implements Serializable {
     private Date lastUpdatedAt; // = null;
     @JsonIgnore
     private String lastUpdatedBy = "";
-    
 
     /**
      * @return String return the id
      */
     public String getId() {
         return id;
+    }
+
+    public double getAmount() {
+        return amount;
+    }
+
+    public void setAmount(double amount) {
+        this.amount = amount;
+    }
+
+    public String getTransactionReferenceId() {
+        return transactionReferenceId;
+    }
+
+    public void setTransactionReferenceId(String transactionReferenceId) {
+        this.transactionReferenceId = transactionReferenceId;
     }
 
     /**
