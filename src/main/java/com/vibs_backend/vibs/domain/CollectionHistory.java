@@ -112,5 +112,9 @@ public class CollectionHistory implements Serializable{
         this.lastUpdatedBy = lastUpdatedBy;
     }
 
+    public static long getSerialversionuid() {
+        return serialVersionUID;
+    }
+
     
 }

@@ -69,6 +69,7 @@ public class PaymentController {
                             ch.setAmount(sub.getPrice());
                             ch.setBalance(ca.getBalance());
                             ch.setTransactionReferenceId(tid);
+                            ch.setCollectionAccount(ca);
                             chService.save(ch);
                             // create payment transaction
                             PaymentTransaction pt = new PaymentTransaction();
