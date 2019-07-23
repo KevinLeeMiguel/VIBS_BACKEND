@@ -17,7 +17,6 @@ public class InsuranceType implements Serializable {
     @Id
     @Column(updatable = false)
     private String id = UUID.randomUUID().toString();
-    @Column(unique = true)
     private String name;
     private String description;
     @Column(columnDefinition = "TEXT")
