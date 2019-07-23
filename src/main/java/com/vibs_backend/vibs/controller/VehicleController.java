@@ -49,10 +49,13 @@ public class VehicleController {
         ResponseBean rs = new ResponseBean();
         try {
             String username = request.getHeader("doneBy");
+            String ownerName = request.getHeader("names");
             ic.setDoneBy(username);
             ic.setLastUpdatedAt(new Date());
             ic.setLastUpdatedBy(username);
             ic.setOwnerReferenceId(id);
+            ic.setOwnerReferenceEmail(username);
+            ic.setOwnerReferenceName(ownerName);
             Vehicle icd = vehicleService.create(ic);
             rs.setCode(200);
             rs.setDescription("Saved successfully");

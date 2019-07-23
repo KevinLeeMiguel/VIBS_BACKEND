@@ -75,6 +75,7 @@ public class SubscriptionController {
                                 s.setAutoUsage(aUsage);
                                 s.setType(itype.get());
                                 s.setStatus(SubscriptionStatus.PENDING);
+                                s.setCompanyName(ic.get().getName());
                                 sService.create(s);
                                 rs.setCode(200);
                                 rs.setDescription("success");

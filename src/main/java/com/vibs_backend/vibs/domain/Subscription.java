@@ -38,6 +38,7 @@ public class Subscription implements Serializable {
     @OneToOne
     private InsuranceType type;
     private String companyReferenceId;
+    private String companyName;
     // @JsonIgnore
     @OneToOne
     private Vehicle vehicle;
@@ -55,6 +56,14 @@ public class Subscription implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
     }
 
     public String getQrCode() {

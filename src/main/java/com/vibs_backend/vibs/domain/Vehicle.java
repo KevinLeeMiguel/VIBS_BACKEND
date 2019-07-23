@@ -19,6 +19,8 @@ public class Vehicle implements Serializable {
     private String plateNo;
     private String document;
     private String ownerReferenceId;
+    private String ownerReferenceName;
+    private String ownerReferenceEmail;
     private String vin;
     private int seats;
     private String make;
@@ -36,6 +38,22 @@ public class Vehicle implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getOwnerReferenceEmail() {
+        return ownerReferenceEmail;
+    }
+
+    public void setOwnerReferenceEmail(String ownerReferenceEmail) {
+        this.ownerReferenceEmail = ownerReferenceEmail;
+    }
+
+    public String getOwnerReferenceName() {
+        return ownerReferenceName;
+    }
+
+    public void setOwnerReferenceName(String ownerReferenceName) {
+        this.ownerReferenceName = ownerReferenceName;
     }
 
     public int getSeats() {
