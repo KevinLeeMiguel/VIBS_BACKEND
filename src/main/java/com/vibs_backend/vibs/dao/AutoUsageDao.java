@@ -1,7 +1,9 @@
 package com.vibs_backend.vibs.dao;
 
 
+import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.AutoUsage;
 
@@ -13,6 +15,7 @@ public interface AutoUsageDao extends JpaRepository<AutoUsage,String>{
         entity.setDeletedStatus(true);
         return this.save(entity);
     }
+
     public AutoUsage findByNameAndCompanyIdAndDeletedStatus(String name,String id,boolean deletedStatus);
     public List<AutoUsage> findByCompanyIdAndDeletedStatus(String id,boolean deletedStatus);
 }

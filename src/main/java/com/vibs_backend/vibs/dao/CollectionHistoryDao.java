@@ -1,5 +1,6 @@
 package com.vibs_backend.vibs.dao;
 
+import java.util.Date;
 import java.util.List;
 
 import com.vibs_backend.vibs.domain.CollectionHistory;
@@ -10,4 +11,7 @@ public interface CollectionHistoryDao extends JpaRepository<CollectionHistory,St
     
 
     List<CollectionHistory>findByCollectionAccountId(String id);
+    List<CollectionHistory>findByDoneAtBetween(Date start, Date end);
+    Long countByDoneAtBetween(Date start,Date end);
+
 }

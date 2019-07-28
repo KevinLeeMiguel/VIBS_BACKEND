@@ -1,6 +1,7 @@
 package com.vibs_backend.vibs.dao;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 
@@ -12,5 +13,7 @@ public interface InsuranceCompanyDao extends JpaRepository<InsuranceCompany, Str
         return this.save(entity);
     }
     public List<InsuranceCompany>findByDeletedStatus(Boolean deletedStatus);
+     Optional<InsuranceCompany> findByName(String name);
+    Long countAllByDeletedStatus(boolean status);
 
 }

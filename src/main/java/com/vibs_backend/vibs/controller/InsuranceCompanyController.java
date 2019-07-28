@@ -1,5 +1,6 @@
 package com.vibs_backend.vibs.controller;
 
+import com.vibs_backend.vibs.dao.InsuranceCompanyDao;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -31,6 +32,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 @RequestMapping("/insurancecompanies")
 public class InsuranceCompanyController {
     @Autowired
+    private InsuranceCompanyDao iccService;
+    @Autowired
     private IinsuranceCompanyService icService;
     @Autowired
     private CollectionAccountDao cService;
@@ -49,19 +52,25 @@ public class InsuranceCompanyController {
     public ResponseEntity<Object> create(@RequestBody InsuranceCompany ic, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            String username = request.getHeader("doneBy");
-            ic.setDoneBy(username);
-            ic.setLastUpdatedAt(new Date());
-            ic.setLastUpdatedBy(username);
-            InsuranceCompany icd = icService.create(ic);
-            CollectionAccount ca = new CollectionAccount();
-            ca.setBalance(0.0);
-            ca.setCompany(icd);
-            ca.setDoneBy(username);
-            cService.save(ca);
-            rs.setCode(200);
-            rs.setDescription("Saved successfully");
-            rs.setObject(icd);
+            Optional<InsuranceCompany> icc = iccService.findByName(ic.getName());
+            if(!icc.isPresent()){
+                String username = request.getHeader("doneBy");
+                ic.setDoneBy(username);
+                ic.setLastUpdatedAt(new Date());
+                ic.setLastUpdatedBy(username);
+                InsuranceCompany icd = icService.create(ic);
+                CollectionAccount ca = new CollectionAccount();
+                ca.setBalance(0.0);
+                ca.setCompany(icd);
+                ca.setDoneBy(username);
+                cService.save(ca);
+                rs.setCode(200);
+                rs.setDescription("Saved successfully");
+                rs.setObject(icd);
+            }else{
+                rs.setCode(300);
+                rs.setDescription("Company with name: "+icc.get().getName()+" already exists!");
+            }
         } catch (Exception e) {
             e.printStackTrace();
             rs.setCode(500);
