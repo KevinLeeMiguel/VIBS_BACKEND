@@ -1,9 +1,7 @@
 package com.vibs_backend.vibs.dao;
 
 
-import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.AutoUsage;
 
