@@ -24,6 +24,7 @@ public class Subscription implements Serializable {
     private Date startDate;
     private Date endDate;
     private boolean active;
+    private double vehicleEstimatedValue;
     private double price;
     private boolean paymentStatus = false;
     @Column(columnDefinition = "TEXT")
@@ -56,6 +57,14 @@ public class Subscription implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public double getVehicleEstimatedValue() {
+        return vehicleEstimatedValue;
+    }
+
+    public void setVehicleEstimatedValue(double vehicleEstimatedValue) {
+        this.vehicleEstimatedValue = vehicleEstimatedValue;
     }
 
     public String getCompanyName() {
