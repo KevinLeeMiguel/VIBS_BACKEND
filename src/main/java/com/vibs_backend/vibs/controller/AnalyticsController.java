@@ -1,10 +1,17 @@
 package com.vibs_backend.vibs.controller;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
+import com.vibs_backend.vibs.dao.CollectionAccountDao;
+import com.vibs_backend.vibs.dao.CollectionHistoryDao;
 import com.vibs_backend.vibs.dao.InsuranceCompanyDao;
 import com.vibs_backend.vibs.dao.SubscriptionDao;
+import com.vibs_backend.vibs.domain.CollectionAccount;
+import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.domain.SubscriptionStatus;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
@@ -21,6 +28,10 @@ public class AnalyticsController {
     private InsuranceCompanyDao icService;
     @Autowired
     private SubscriptionDao sService;
+    @Autowired
+    private CollectionHistoryDao chService;
+    @Autowired
+    private CollectionAccountDao caService;
 
     @GetMapping(value="/insurancecompanies/count")
     public ResponseEntity<Object> countIcs() {
@@ -43,6 +54,43 @@ public class AnalyticsController {
         try {
             Long count = icService.countAllByDeletedStatus(false);
             rs.setCode(200);
+            rs.setObject(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("Error Occurred");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @GetMapping(value="/collectionhistory/countAll/ic/{id}")
+    public ResponseEntity<Object> totalchs(@PathVariable String id) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<InsuranceCompany> ic = icService.findById(id);
+            Optional<CollectionAccount> ca = caService.findByCompanyId(ic.get().getId());
+            Double count = chService.getTotalhistorybyic(ca.get().getId());
+            rs.setCode(200);
+            rs.setObject(count);
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("Error Occurred");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @PostMapping(value="/collectionhistory/countbydates/ic/{id}")
+    public ResponseEntity<Object> totalchsByDates(@PathVariable String id, @RequestBody Map<String, String> dates) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<InsuranceCompany> ic = icService.findById(id);
+            Optional<CollectionAccount> ca = caService.findByCompanyId(ic.get().getId());
+            Double count = chService.getTotalhistorybyicAnddates(ca.get().getId(), new SimpleDateFormat("yyyy-MM-dd").parse(dates.get("start")),new SimpleDateFormat("yyyy-MM-dd").parse(dates.get("end")));
+            rs.setCode(200);
+            if(count == null)
+                rs.setObject(0);
+            else
             rs.setObject(count);
         } catch (Exception e) {
             e.printStackTrace();

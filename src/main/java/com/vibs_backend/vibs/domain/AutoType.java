@@ -24,19 +24,27 @@ public class AutoType implements Serializable{
     @JsonIgnore
     @ManyToOne
     private InsuranceCompany company;
+    private Boolean isGeneral;
     private Boolean deletedStatus = false;
     @Column(nullable = false, updatable = false)
-	private Date doneAt = new Date();
-	@JsonIgnore
-	private String doneBy = "";
+    private Date doneAt = new Date();
     @JsonIgnore
-	private Date lastUpdatedAt; // = null;
-	@JsonIgnore
-	private String lastUpdatedBy = "";
+    private String doneBy = "";
+    @JsonIgnore
+    private Date lastUpdatedAt; // = null;
+    @JsonIgnore
+    private String lastUpdatedBy = "";
 
-    
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public Boolean getIsGeneral() {
+        return isGeneral;
+    }
+
+    public void setIsGeneral(Boolean isGeneral) {
+        this.isGeneral = isGeneral;
     }
 
     public Boolean getDeletedStatus() {

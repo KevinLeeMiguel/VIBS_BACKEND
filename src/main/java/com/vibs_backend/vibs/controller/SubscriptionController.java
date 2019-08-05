@@ -34,7 +34,6 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PutMapping;
 
-
 @RestController
 @RequestMapping("/subscriptions")
 public class SubscriptionController {
@@ -50,6 +49,66 @@ public class SubscriptionController {
     private IAutoUsageService aUsageService;
     @Autowired
     private IinsuranceTypesService itypeService;
+
+    @PostMapping(value = "/multiple/save")
+    public ResponseEntity<Object> createMultiple(@RequestBody SubscriptionReqMultiple sq, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            String username = request.getHeader("doneBy");
+            Optional<Vehicle> v = vService.findById(sq.getVehicleId());
+            if (v.isPresent()) {
+                List<String> icsList = sq.getCompanyIds();
+                for (String id : icsList) {
+                    Optional<InsuranceCompany> ic = icService.findOne(id);
+                    if (ic.isPresent()) {
+                        AutoType atype = atypeService.findById(sq.getAutoTypeId());
+                        if (atype != null) {
+                            AutoUsage aUsage = aUsageService.findById(sq.getAutoUsageId());
+                            if (aUsage != null) {
+                                Optional<InsuranceType> itype = itypeService.findById(sq.getTypeId());
+                                if (itype.isPresent()) {
+                                    Subscription s = sq.getSub();
+                                    s.setId(UUID.randomUUID().toString());
+                                    s.setDoneBy(username);
+                                    s.setVehicle(v.get());
+                                    s.setCompanyReferenceId(ic.get().getId());
+                                    s.setAutoType(atype);
+                                    s.setAutoUsage(aUsage);
+                                    s.setType(itype.get());
+                                    s.setStatus(SubscriptionStatus.PENDING);
+                                    s.setCompanyName(ic.get().getName());
+                                    sService.create(s);
+                                    // rs.setObject(s);
+                                } else {
+                                    rs.setCode(404);
+                                    rs.setDescription("invalid insurance type");
+                                }
+                            } else {
+                                rs.setCode(404);
+                                rs.setDescription("invalid Vehicle Usage");
+                            }
+                        } else {
+                            rs.setCode(404);
+                            rs.setDescription("invalid Vehicle Type");
+                        }
+                    } else {
+                        rs.setCode(404);
+                        rs.setDescription("Insurance company not found");
+                    }
+                }
+                rs.setCode(200);
+                rs.setDescription("insurance requests sent successfully");
+            } else {
+                rs.setCode(404);
+                rs.setDescription("Vehicle not found");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
 
     @PostMapping(value = "/save")
     public ResponseEntity<Object> create(@RequestBody SubscriptionReq sq, HttpServletRequest request) {
@@ -151,12 +210,12 @@ public class SubscriptionController {
         ResponseBean rs = new ResponseBean();
         try {
             SubscriptionStatus st = sService.getStatus(status);
-            if(st != null){
+            if (st != null) {
                 List<Subscription> li = sService.findAllByCompanyAndStatus(id, st);
                 rs.setCode(200);
                 rs.setDescription("success");
                 rs.setObject(li);
-            }else{
+            } else {
                 rs.setCode(404);
                 rs.setDescription("Invalid status");
             }
@@ -174,12 +233,12 @@ public class SubscriptionController {
         ResponseBean rs = new ResponseBean();
         try {
             SubscriptionStatus st = sService.getStatus(status);
-            if(st != null){
+            if (st != null) {
                 List<Subscription> li = sService.findAllByUsernameAndStatus(username, st);
                 rs.setCode(200);
                 rs.setDescription("success");
                 rs.setObject(li);
-            }else{
+            } else {
                 rs.setCode(404);
                 rs.setDescription("Invalid status");
             }
@@ -191,15 +250,16 @@ public class SubscriptionController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @PutMapping(value="/{id}/approve")
-    public ResponseEntity<Object> approve(@PathVariable String id,@RequestBody approvalDetails ad,  HttpServletRequest request) {
+    @PutMapping(value = "/{id}/approve")
+    public ResponseEntity<Object> approve(@PathVariable String id, @RequestBody approvalDetails ad,
+            HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
             Optional<Subscription> sub = sService.findById(id);
             String username = request.getHeader("doneBy");
-            if(sub.isPresent()){
+            if (sub.isPresent()) {
                 Subscription subb = sub.get();
-                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                if (subb.getStatus().equals(SubscriptionStatus.PENDING)) {
                     subb.setStatus(SubscriptionStatus.APPROVED);
                     subb.setStartDate(ad.getStartDate());
                     subb.setEndDate(ad.getEndDate());
@@ -209,13 +269,13 @@ public class SubscriptionController {
                     sService.update(subb);
                     rs.setCode(200);
                     rs.setDescription("subscription successfully approved");
-                }else{
+                } else {
                     rs.setCode(400);
-                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                    if (subb.getStatus().equals(SubscriptionStatus.APPROVED)) {
                         rs.setDescription("subscription already approved");
-                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                    } else if (subb.getStatus().equals(SubscriptionStatus.CANCELED)) {
                         rs.setDescription("subscription was canceled");
-                    }else{
+                    } else {
                         rs.setDescription("subscription was rejected");
                     }
                 }
@@ -224,31 +284,31 @@ public class SubscriptionController {
             rs.setCode(300);
             rs.setDescription("Internal error occured");
         }
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @PutMapping(value="/{id}/reject")
+    @PutMapping(value = "/{id}/reject")
     public ResponseEntity<Object> reject(@PathVariable String id, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
             Optional<Subscription> sub = sService.findById(id);
             String username = request.getHeader("doneBy");
-            if(sub.isPresent()){
+            if (sub.isPresent()) {
                 Subscription subb = sub.get();
-                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                if (subb.getStatus().equals(SubscriptionStatus.PENDING)) {
                     subb.setStatus(SubscriptionStatus.REJECTED);
                     subb.setLastUpdatedBy(username);
                     subb.setLastUpdatedAt(new Date());
                     sService.update(subb);
                     rs.setCode(200);
                     rs.setDescription("subscription successfully rejected");
-                }else{
+                } else {
                     rs.setCode(400);
-                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                    if (subb.getStatus().equals(SubscriptionStatus.APPROVED)) {
                         rs.setDescription("subscription was approved");
-                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                    } else if (subb.getStatus().equals(SubscriptionStatus.CANCELED)) {
                         rs.setDescription("subscription was canceled");
-                    }else{
+                    } else {
                         rs.setDescription("subscription already rejected");
                     }
                 }
@@ -257,31 +317,31 @@ public class SubscriptionController {
             rs.setCode(300);
             rs.setDescription("Internal error occured");
         }
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @PutMapping(value="/{id}/cancel")
+    @PutMapping(value = "/{id}/cancel")
     public ResponseEntity<Object> cancel(@PathVariable String id, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
             Optional<Subscription> sub = sService.findById(id);
             String username = request.getHeader("doneBy");
-            if(sub.isPresent()){
+            if (sub.isPresent()) {
                 Subscription subb = sub.get();
-                if(subb.getStatus().equals(SubscriptionStatus.PENDING)){
+                if (subb.getStatus().equals(SubscriptionStatus.PENDING)) {
                     subb.setStatus(SubscriptionStatus.CANCELED);
                     subb.setLastUpdatedBy(username);
                     subb.setLastUpdatedAt(new Date());
                     sService.update(subb);
                     rs.setCode(200);
                     rs.setDescription("subscription successfully canceled");
-                }else{
+                } else {
                     rs.setCode(400);
-                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED)){
+                    if (subb.getStatus().equals(SubscriptionStatus.APPROVED)) {
                         rs.setDescription("subscription was approved");
-                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                    } else if (subb.getStatus().equals(SubscriptionStatus.CANCELED)) {
                         rs.setDescription("subscription already canceled");
-                    }else{
+                    } else {
                         rs.setDescription("subscription was rejected");
                     }
                 }
@@ -290,18 +350,19 @@ public class SubscriptionController {
             rs.setCode(300);
             rs.setDescription("Internal error occured");
         }
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @PutMapping(value="/{id}/pay")
-    public ResponseEntity<Object> pay(@PathVariable String id,@RequestBody Map<String,Object> map, HttpServletRequest request) {
+    @PutMapping(value = "/{id}/pay")
+    public ResponseEntity<Object> pay(@PathVariable String id, @RequestBody Map<String, Object> map,
+            HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
             Optional<Subscription> sub = sService.findById(id);
             String username = request.getHeader("doneBy");
-            if(sub.isPresent()){
+            if (sub.isPresent()) {
                 Subscription subb = sub.get();
-                if(subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == false){
+                if (subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == false) {
                     subb.setLastUpdatedBy(username);
                     subb.setLastUpdatedAt(new Date());
                     subb.setPaymentStatus(true);
@@ -309,13 +370,13 @@ public class SubscriptionController {
                     sService.update(subb);
                     rs.setCode(200);
                     rs.setDescription("subscription successfully paid");
-                }else{
+                } else {
                     rs.setCode(400);
-                    if(subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == true){
+                    if (subb.getStatus().equals(SubscriptionStatus.APPROVED) && subb.isPaymentStatus() == true) {
                         rs.setDescription("subscription was paid already");
-                    }else if(subb.getStatus().equals(SubscriptionStatus.CANCELED)){
+                    } else if (subb.getStatus().equals(SubscriptionStatus.CANCELED)) {
                         rs.setDescription("subscription already canceled");
-                    }else{
+                    } else {
                         rs.setDescription("subscription was rejected");
                     }
                 }
@@ -324,9 +385,10 @@ public class SubscriptionController {
             rs.setCode(300);
             rs.setDescription("Internal error occured");
         }
-        return new ResponseEntity<>(rs,HttpStatus.OK);
+        return new ResponseEntity<>(rs, HttpStatus.OK);
     }
-    public static class approvalDetails{
+
+    public static class approvalDetails {
         private Date startDate;
         private Date endDate;
         private double amount;
@@ -354,8 +416,9 @@ public class SubscriptionController {
         public void setAmount(double amount) {
             this.amount = amount;
         }
-         
+
     }
+
     public static class SubscriptionReq {
         private Subscription sub;
         private String autoTypeId;
@@ -410,6 +473,64 @@ public class SubscriptionController {
 
         public void setCompanyId(String companyId) {
             this.companyId = companyId;
+        }
+
+    }
+
+    public static class SubscriptionReqMultiple {
+        private Subscription sub;
+        private String autoTypeId;
+        private String autoUsageId;
+        private String typeId;
+        private String vehicleId;
+        private List<String> companyIds;
+
+        public Subscription getSub() {
+            return sub;
+        }
+
+        public void setSub(Subscription sub) {
+            this.sub = sub;
+        }
+
+        public String getAutoTypeId() {
+            return autoTypeId;
+        }
+
+        public void setAutoTypeId(String autoTypeId) {
+            this.autoTypeId = autoTypeId;
+        }
+
+        public String getAutoUsageId() {
+            return autoUsageId;
+        }
+
+        public void setAutoUsageId(String autoUsageId) {
+            this.autoUsageId = autoUsageId;
+        }
+
+        public String getTypeId() {
+            return typeId;
+        }
+
+        public void setTypeId(String typeId) {
+            this.typeId = typeId;
+        }
+
+        public String getVehicleId() {
+            return vehicleId;
+        }
+
+        public void setVehicleId(String vehicleId) {
+            this.vehicleId = vehicleId;
+        }
+
+        public List<String> getCompanyIds() {
+            return companyIds;
+        }
+
+        public void setCompanyIds(List<String> companyIds) {
+            this.companyIds = companyIds;
         }
 
     }

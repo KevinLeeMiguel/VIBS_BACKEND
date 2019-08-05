@@ -19,6 +19,7 @@ public class InsuranceType implements Serializable {
     private String id = UUID.randomUUID().toString();
     private String name;
     private String description;
+    private Boolean isGeneral;
     @Column(columnDefinition = "TEXT")
     private String termsAndConditions;
     private Boolean deletedStatus = false;
@@ -36,6 +37,14 @@ public class InsuranceType implements Serializable {
 
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public Boolean getIsGeneral() {
+        return isGeneral;
+    }
+
+    public void setIsGeneral(Boolean isGeneral) {
+        this.isGeneral = isGeneral;
     }
 
     public String getId() {

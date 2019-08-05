@@ -15,6 +15,8 @@ public interface InsuranceTypeDao extends JpaRepository<InsuranceType,String> {
     }
     List<InsuranceType> findByCompanyIdAndDeletedStatus(String id,Boolean dStatus);
     List<InsuranceType> findByDeletedStatus(Boolean st);
+    List<InsuranceType> findByIsGeneralAndDeletedStatus(Boolean isG,boolean st);
     Optional<InsuranceType> findByIdAndDeletedStatus(String id,Boolean st);
     public Optional<InsuranceType> findByNameAndCompanyIdAndDeletedStatus(String name,String id,boolean deletedStatus);
+    public Optional<InsuranceType> findByNameAndIsGeneralAndDeletedStatus(String name,boolean isG,boolean deletedStatus);
 }

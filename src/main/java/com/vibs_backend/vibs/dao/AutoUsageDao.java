@@ -15,5 +15,8 @@ public interface AutoUsageDao extends JpaRepository<AutoUsage,String>{
     }
 
     public AutoUsage findByNameAndCompanyIdAndDeletedStatus(String name,String id,boolean deletedStatus);
+    public AutoUsage findByNameAndIsGeneralAndDeletedStatus(String name,boolean isG,boolean deletedStatus);
     public List<AutoUsage> findByCompanyIdAndDeletedStatus(String id,boolean deletedStatus);
+    public List<AutoUsage> findByIsGeneralAndDeletedStatus(boolean isG,boolean deletedStatus);
+
 }

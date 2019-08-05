@@ -5,6 +5,7 @@ import java.util.Optional;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vibs_backend.vibs.dao.InsuranceTypeDao;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.domain.InsuranceType;
 import com.vibs_backend.vibs.service.IinsuranceCompanyService;
@@ -26,7 +27,33 @@ public class InsuranceTypesController {
     @Autowired
     private IinsuranceTypesService itypeService;
     @Autowired
+    private InsuranceTypeDao itypeDao;
+    @Autowired
     private IinsuranceCompanyService icService;
+
+    @PostMapping(value = "/general/insuranceTypes/save")
+    public ResponseEntity<Object> createGeneral(@RequestBody InsuranceType iType,HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            String username = request.getHeader("doneBy");
+                Optional<InsuranceType> itypen = itypeDao.findByNameAndIsGeneralAndDeletedStatus(iType.getName(),true,false);
+                if(!itypen.isPresent()){
+                    iType.setDoneBy(username);
+                    iType.setIsGeneral(true);
+                    itypeService.create(iType);
+                    rs.setCode(200);
+                    rs.setDescription("success");
+                    rs.setObject(iType);
+                }else{
+                    rs.setCode(400);
+                    rs.setDescription("Insurance Type with name: "+iType.getName()+", already exists");
+                }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
 
     @PostMapping(value = "/insuranceCompanies/{id}/insuranceTypes/save")
     public ResponseEntity<Object> create(@RequestBody InsuranceType iType, @PathVariable String id,HttpServletRequest request) {
@@ -72,6 +99,21 @@ public class InsuranceTypesController {
                 rs.setCode(404);
                 rs.setDescription("company doesn't exist");
             }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Error occured");
+        }
+        return new ResponseEntity<>(rs,HttpStatus.OK);
+    }
+
+    @GetMapping(value="/general/insuranceTypes")
+    public ResponseEntity<Object> findAllGeneral(){
+        ResponseBean rs = new ResponseBean();
+        try {
+                List<InsuranceType> li = itypeDao.findByIsGeneralAndDeletedStatus(true, false);
+                rs.setCode(200);
+                rs.setDescription("success");
+                rs.setObject(li);
         } catch (Exception e) {
             rs.setCode(300);
             rs.setDescription("Error occured");
