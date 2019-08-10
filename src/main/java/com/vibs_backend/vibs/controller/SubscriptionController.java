@@ -16,6 +16,7 @@ import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 
 import com.vibs_backend.vibs.dao.SubscriptionContractDao;
+import com.vibs_backend.vibs.dao.SubscriptionDao;
 import com.vibs_backend.vibs.domain.AutoType;
 import com.vibs_backend.vibs.domain.AutoUsage;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
@@ -67,6 +68,8 @@ public class SubscriptionController {
     private IinsuranceTypesService itypeService;
     @Autowired
     private SubscriptionContractDao subcaDao;
+    @Autowired
+    private SubscriptionDao sDao;
 
     @PostMapping(value = "/multiple/save")
     public ResponseEntity<Object> createMultiple(@RequestBody SubscriptionReqMultiple sq, HttpServletRequest request) {
@@ -190,6 +193,22 @@ public class SubscriptionController {
         ResponseBean rs = new ResponseBean();
         try {
             List<Subscription> li = sService.findAllByCompany(id);
+            rs.setCode(200);
+            rs.setDescription("success");
+            rs.setObject(li);
+        } catch (Exception e) {
+            e.printStackTrace();
+            rs.setCode(300);
+            rs.setDescription("error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    @GetMapping(value = "/vehicles/{id}/all")
+    public ResponseEntity<Object> getAllByVehicle(@PathVariable String id, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            List<Subscription> li = sDao.findByVehicleIdAndStatusAndPaymentStatusAndDeletedStatus(id, SubscriptionStatus.APPROVED, true,false);
             rs.setCode(200);
             rs.setDescription("success");
             rs.setObject(li);

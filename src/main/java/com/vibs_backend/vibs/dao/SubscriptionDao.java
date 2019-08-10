@@ -20,6 +20,7 @@ public interface SubscriptionDao extends JpaRepository<Subscription,String>{
     public List<Subscription>findByCompanyReferenceIdAndStatusAndDeletedStatus(String referenceId,String status,Boolean deletedStatus);
 	public List<Subscription> findByCompanyReferenceIdAndStatusAndDeletedStatus(String id, SubscriptionStatus status,boolean deletedStatus);
     public List<Subscription> findByDoneByAndStatusAndDeletedStatus(String doneBy, SubscriptionStatus status,boolean deletedStatus);
+    public List<Subscription> findByVehicleIdAndStatusAndPaymentStatusAndDeletedStatus(String vid,SubscriptionStatus status,boolean pstatus, boolean deletedStatus);
     //analytics
     Long countAllByCompanyReferenceIdAndStatusAndDeletedStatus(String id,SubscriptionStatus status,Boolean dStatus);
     Long countAllByCompanyReferenceIdAndStatusAndPaymentStatusAndDeletedStatus(String id,SubscriptionStatus status,Boolean pStatus,Boolean dStatus);
