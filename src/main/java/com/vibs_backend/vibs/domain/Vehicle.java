@@ -2,11 +2,13 @@ package com.vibs_backend.vibs.domain;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 import java.util.UUID;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
@@ -18,6 +20,7 @@ public class Vehicle implements Serializable {
     private String id = UUID.randomUUID().toString();
     private String plateNo;
     private String document;
+    private String documentName;
     private String ownerReferenceId;
     private String ownerReferenceName;
     private String ownerReferenceEmail;
@@ -36,8 +39,19 @@ public class Vehicle implements Serializable {
     @JsonIgnore
     private String lastUpdatedBy = "";
 
+    @OneToMany(mappedBy = "vehicle")
+    private List<VehicleImage> images;
+
     public static long getSerialversionuid() {
         return serialVersionUID;
+    }
+
+    public String getDocumentName() {
+        return documentName;
+    }
+
+    public void setDocumentName(String documentName) {
+        this.documentName = documentName;
     }
 
     public String getOwnerReferenceEmail() {
@@ -166,6 +180,14 @@ public class Vehicle implements Serializable {
 
     public void setYear(long year) {
         this.year = year;
+    }
+
+    public List<VehicleImage> getImages() {
+        return images;
+    }
+
+    public void setImages(List<VehicleImage> images) {
+        this.images = images;
     }
     
 }

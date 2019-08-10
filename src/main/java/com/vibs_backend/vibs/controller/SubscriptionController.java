@@ -1,5 +1,12 @@
 package com.vibs_backend.vibs.controller;
 
+import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -8,11 +15,13 @@ import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.vibs_backend.vibs.dao.SubscriptionContractDao;
 import com.vibs_backend.vibs.domain.AutoType;
 import com.vibs_backend.vibs.domain.AutoUsage;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.domain.InsuranceType;
 import com.vibs_backend.vibs.domain.Subscription;
+import com.vibs_backend.vibs.domain.SubscriptionContract;
 import com.vibs_backend.vibs.domain.SubscriptionStatus;
 import com.vibs_backend.vibs.domain.Vehicle;
 import com.vibs_backend.vibs.service.IAutoTypeService;
@@ -24,15 +33,22 @@ import com.vibs_backend.vibs.service.IinsuranceTypesService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.InputStreamResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/subscriptions")
@@ -49,6 +65,8 @@ public class SubscriptionController {
     private IAutoUsageService aUsageService;
     @Autowired
     private IinsuranceTypesService itypeService;
+    @Autowired
+    private SubscriptionContractDao subcaDao;
 
     @PostMapping(value = "/multiple/save")
     public ResponseEntity<Object> createMultiple(@RequestBody SubscriptionReqMultiple sq, HttpServletRequest request) {
@@ -287,6 +305,54 @@ public class SubscriptionController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
+    @PutMapping(value = "/{id}/approvewithcontract")
+    public ResponseEntity<Object> approveWithContract(@PathVariable String id, @RequestParam Map<String, String> ad,
+            @RequestParam("file") MultipartFile file, HttpServletRequest request) {
+        ResponseBean rs = new ResponseBean();
+        try {
+            Optional<Subscription> sub = sService.findById(id);
+            String username = request.getHeader("doneBy");
+            if (sub.isPresent()) {
+                Subscription subb = sub.get();
+                if (subb.getStatus().equals(SubscriptionStatus.PENDING)) {
+                    Object upRes = upLoad(file);
+                    if(upRes != null){
+                        subb.setStatus(SubscriptionStatus.APPROVED);
+                        subb.setStartDate(new SimpleDateFormat("yyyy-MM-dd").parse(ad.get("startDate")));
+                        subb.setEndDate(new SimpleDateFormat("yyyy-MM-dd").parse(ad.get("endDate")));
+                        subb.setPrice(Double.parseDouble(ad.get("amount")));
+                        subb.setLastUpdatedBy(username);
+                        subb.setLastUpdatedAt(new Date());
+                        sService.update(subb);
+                        SubscriptionContract sc = new SubscriptionContract();
+                        sc.setName(file.getOriginalFilename());
+                        sc.setPath(upRes.toString());
+                        sc.setSubscription(subb);
+                        subcaDao.save(sc);
+                        rs.setCode(200);
+                        rs.setDescription("subscription successfully approved");
+                    }else{
+                        rs.setCode(500);
+                        rs.setDescription("failed to upload the contract");
+                    }
+                } else {
+                    rs.setCode(400);
+                    if (subb.getStatus().equals(SubscriptionStatus.APPROVED)) {
+                        rs.setDescription("subscription already approved");
+                    } else if (subb.getStatus().equals(SubscriptionStatus.CANCELED)) {
+                        rs.setDescription("subscription was canceled");
+                    } else {
+                        rs.setDescription("subscription was rejected");
+                    }
+                }
+            }
+        } catch (Exception e) {
+            rs.setCode(300);
+            rs.setDescription("Internal error occured");
+        }
+        return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
     @PutMapping(value = "/{id}/reject")
     public ResponseEntity<Object> reject(@PathVariable String id, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
@@ -386,6 +452,45 @@ public class SubscriptionController {
             rs.setDescription("Internal error occured");
         }
         return new ResponseEntity<>(rs, HttpStatus.OK);
+    }
+
+    	// download Loan Document file
+	@RequestMapping(path = "/documents/download/{uuid}", method = RequestMethod.GET)
+	public ResponseEntity<Resource> download(String param, @PathVariable("uuid") String uuid) throws IOException {
+
+        SubscriptionContract doc = subcaDao.getOne(uuid);
+		String filePath = doc.getPath();
+		File file = new File(filePath);
+		HttpHeaders headers = new HttpHeaders();
+		headers.add("Cache-Control", "no-cache, no-store, must-revalidate");
+		headers.add("Pragma", "no-cache");
+		headers.add("Expires", "0");
+		headers.add("Content-Disposition", "inline; filename=" + doc.getName());
+		Path path = Paths.get(filePath);
+		byte[] b = Files.readAllBytes((path));
+		ByteArrayInputStream bis = new ByteArrayInputStream(b);
+		return ResponseEntity.ok().headers(headers).contentLength(file.length())
+				.contentType(MediaType.parseMediaType("application/octet-stream")).body(new InputStreamResource(bis));
+	}
+
+    public Object upLoad(MultipartFile file) {
+        try {
+            String parent = "VIBS_FILES";
+            File f = new File(parent);
+            String filename = file.getOriginalFilename();
+            if (!f.exists())
+                f.mkdir();
+            File sub = new File(f, "Contracts");
+            if (!sub.exists())
+                sub.mkdir();
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(sub.getPath() + "/" + filename);
+            Files.write(path, bytes);
+            return path;
+        } catch (Exception e) {
+            return null;
+        }
+
     }
 
     public static class approvalDetails {

@@ -54,6 +54,10 @@ public class Subscription implements Serializable {
     private String lastUpdatedBy = "";
     @Enumerated(EnumType.STRING)
     private SubscriptionStatus status;
+    @OneToOne(mappedBy = "subscription")
+    private SubscriptionContract contract;
+
+    
 
     public static long getSerialversionuid() {
         return serialVersionUID;
@@ -225,6 +229,14 @@ public class Subscription implements Serializable {
 
     public void setCompanyReferenceId(String companyReferenceId) {
         this.companyReferenceId = companyReferenceId;
+    }
+
+    public SubscriptionContract getContract() {
+        return contract;
+    }
+
+    public void setContract(SubscriptionContract contract) {
+        this.contract = contract;
     }
 
 }
