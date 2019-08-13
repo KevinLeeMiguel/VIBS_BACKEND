@@ -7,7 +7,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -204,14 +206,26 @@ public class SubscriptionController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    @GetMapping(value = "/vehicles/{id}/all")
-    public ResponseEntity<Object> getAllByVehicle(@PathVariable String id, HttpServletRequest request) {
+    @GetMapping(value = "/vehicles/{plateNo}/all")
+    public ResponseEntity<Object> getAllByVehicle(@PathVariable String plateNo, HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            List<Subscription> li = sDao.findByVehicleIdAndStatusAndPaymentStatusAndDeletedStatus(id, SubscriptionStatus.APPROVED, true,false);
+            List<Subscription> li = sDao.findByVehiclePlateNoAndStatusAndPaymentStatusAndDeletedStatus(plateNo, SubscriptionStatus.APPROVED, true,false);
+            Map<String,Object> map = new HashMap<>();
+            List<Subscription> active = new ArrayList<>();
+            List<Subscription> inactive = new ArrayList<>();
+            for(Subscription s:li){
+                if(new Date().before(s.getEndDate()) && new Date().after(s.getStartDate())){
+                    active.add(s);
+                }else{
+                    inactive.add(s);
+                }
+            }
+            map.put("active", active);
+            map.put("inactive", inactive);
             rs.setCode(200);
             rs.setDescription("success");
-            rs.setObject(li);
+            rs.setObject(map);
         } catch (Exception e) {
             e.printStackTrace();
             rs.setCode(300);
@@ -350,6 +364,8 @@ public class SubscriptionController {
                         subcaDao.save(sc);
                         rs.setCode(200);
                         rs.setDescription("subscription successfully approved");
+                        subb.setContract(sc);
+                        rs.setObject(subb);
                     }else{
                         rs.setCode(500);
                         rs.setDescription("failed to upload the contract");
@@ -387,6 +403,7 @@ public class SubscriptionController {
                     sService.update(subb);
                     rs.setCode(200);
                     rs.setDescription("subscription successfully rejected");
+                    rs.setObject(subb);
                 } else {
                     rs.setCode(400);
                     if (subb.getStatus().equals(SubscriptionStatus.APPROVED)) {
@@ -473,7 +490,7 @@ public class SubscriptionController {
         return new ResponseEntity<>(rs, HttpStatus.OK);
     }
 
-    	// download Loan Document file
+    
 	@RequestMapping(path = "/documents/download/{uuid}", method = RequestMethod.GET)
 	public ResponseEntity<Resource> download(String param, @PathVariable("uuid") String uuid) throws IOException {
 
