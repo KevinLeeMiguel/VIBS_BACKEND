@@ -91,9 +91,9 @@ public class VehicleController {
         try {
             String username = request.getHeader("doneBy");
             String ownerName = request.getHeader("names");
-            Object o = upLoad(file);
+            Vehicle v = new Vehicle();
+            Object o = upLoad(file,v.getId());
             if (o != null) {
-                Vehicle v = new Vehicle();
                 v.setDocument(o.toString());
                 v.setDocumentName(file.getOriginalFilename());
                 v.setDoneBy(username);
@@ -240,10 +240,10 @@ public class VehicleController {
         try {
             Optional<Vehicle> ico = vehicleService.findById(id);
             if (ico.isPresent()) {
-                Object u1 = upLoad(image1);
-                Object u2 = upLoad(image2);
-                Object u3 = upLoad(image3);
-                if(u1!=null && u2!= null && u3!= null){
+                Object u1 = upLoadCarImage(image1, ico.get().getId());
+                Object u2 = upLoadCarImage(image2, ico.get().getId());
+                Object u3 = upLoadCarImage(image3, ico.get().getId());
+                if (u1 != null && u2 != null && u3 != null) {
                     VehicleImage vi1 = new VehicleImage();
                     vi1.setName(image1.getOriginalFilename());
                     vi1.setPath(u1.toString());
@@ -258,17 +258,17 @@ public class VehicleController {
                     vi3.setName(image3.getOriginalFilename());
                     vi3.setPath(u1.toString());
                     vi3.setVehicle(ico.get());
-                    
+
                     viService.save(vi1);
                     viService.save(vi2);
                     viService.save(vi3);
                     rs.setCode(200);
                     rs.setDescription("Images added successfully");
-                }else{
+                } else {
                     rs.setCode(500);
                     rs.setDescription("image upload failed");
                 }
-                
+
             } else {
                 rs.setCode(404);
                 rs.setDescription("The Vehicle you are trying to update was not found");
@@ -369,7 +369,7 @@ public class VehicleController {
                 .contentType(MediaType.parseMediaType("application/octet-stream")).body(new InputStreamResource(bis));
     }
 
-    public Object upLoad(MultipartFile file) {
+    public Object upLoad(MultipartFile file, String id) {
         try {
             String parent = "VIBS_FILES";
             File f = new File(parent);
@@ -380,7 +380,27 @@ public class VehicleController {
             if (!sub.exists())
                 sub.mkdir();
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(sub.getPath() + "/" + filename);
+            Path path = Paths.get(sub.getPath() + "/" + id + '/' + filename);
+            Files.write(path, bytes);
+            return path;
+        } catch (Exception e) {
+            return null;
+        }
+
+    }
+
+    public Object upLoadCarImage(MultipartFile file, String vehicleUuid) {
+        try {
+            String parent = "VIBS_FILES";
+            File f = new File(parent);
+            String filename = file.getOriginalFilename();
+            if (!f.exists())
+                f.mkdir();
+            File sub = new File(f, "vehicles");
+            if (!sub.exists())
+                sub.mkdir();
+            byte[] bytes = file.getBytes();
+            Path path = Paths.get(sub.getPath() + "/" + vehicleUuid + '/' + filename);
             Files.write(path, bytes);
             return path;
         } catch (Exception e) {
