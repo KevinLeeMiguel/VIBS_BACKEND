@@ -1,6 +1,5 @@
 package com.vibs_backend.vibs.controller;
 
-import java.awt.Image;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 
 import com.vibs_backend.vibs.dao.VehicleImageDao;
 import com.vibs_backend.vibs.domain.Subscription;
-import com.vibs_backend.vibs.domain.SubscriptionContract;
 import com.vibs_backend.vibs.domain.Vehicle;
 import com.vibs_backend.vibs.domain.VehicleImage;
 import com.vibs_backend.vibs.service.ISubscriptionService;

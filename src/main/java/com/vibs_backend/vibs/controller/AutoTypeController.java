@@ -12,7 +12,7 @@ import com.vibs_backend.vibs.dao.AutoTypeDao;
 import com.vibs_backend.vibs.domain.AutoType;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.service.IAutoTypeService;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class AutoTypeController {
     @Autowired
     private AutoTypeDao atDao;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
 
     @PostMapping(value = "/general/autotypes/save", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createGeneral(@RequestBody AutoType at, HttpServletRequest request) {

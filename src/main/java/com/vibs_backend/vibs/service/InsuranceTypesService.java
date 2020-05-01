@@ -5,7 +5,7 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.domain.InsuranceType;
 
-public interface IinsuranceTypesService {
+public interface InsuranceTypesService {
     public abstract InsuranceType create(InsuranceType it);
     public abstract InsuranceType update(InsuranceType it);
     public abstract InsuranceType delete(InsuranceType it);

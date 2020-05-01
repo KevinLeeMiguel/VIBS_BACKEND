@@ -16,7 +16,7 @@ import com.vibs_backend.vibs.domain.PaymentTransaction;
 import com.vibs_backend.vibs.domain.Subscription;
 import com.vibs_backend.vibs.domain.SubscriptionStatus;
 import com.vibs_backend.vibs.service.ISubscriptionService;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,7 +37,7 @@ public class PaymentController {
     @Autowired
     private ISubscriptionService sService;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
 
     @PutMapping(value = "/payments/save")
     public ResponseEntity<Object> createPayment(@RequestBody Map<String, Object> map, HttpServletRequest request) {

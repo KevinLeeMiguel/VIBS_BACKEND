@@ -31,8 +31,8 @@ import com.vibs_backend.vibs.service.IAutoTypeService;
 import com.vibs_backend.vibs.service.IAutoUsageService;
 import com.vibs_backend.vibs.service.ISubscriptionService;
 import com.vibs_backend.vibs.service.IVehicleService;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
-import com.vibs_backend.vibs.service.IinsuranceTypesService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceTypesService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -61,13 +61,13 @@ public class SubscriptionController {
     @Autowired
     private IVehicleService vService;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
     @Autowired
     private IAutoTypeService atypeService;
     @Autowired
     private IAutoUsageService aUsageService;
     @Autowired
-    private IinsuranceTypesService itypeService;
+    private InsuranceTypesService itypeService;
     @Autowired
     private SubscriptionContractDao subcaDao;
     @Autowired

@@ -14,7 +14,7 @@ import javax.servlet.http.HttpServletRequest;
 import com.vibs_backend.vibs.dao.CollectionAccountDao;
 import com.vibs_backend.vibs.domain.CollectionAccount;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,7 +34,7 @@ public class InsuranceCompanyController {
     @Autowired
     private InsuranceCompanyDao iccService;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
     @Autowired
     private CollectionAccountDao cService;
     // @Autowired

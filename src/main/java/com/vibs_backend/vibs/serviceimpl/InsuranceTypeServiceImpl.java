@@ -5,13 +5,13 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.InsuranceTypeDao;
 import com.vibs_backend.vibs.domain.InsuranceType;
-import com.vibs_backend.vibs.service.IinsuranceTypesService;
+import com.vibs_backend.vibs.service.InsuranceTypesService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InsuranceTypeServiceImpl implements IinsuranceTypesService {
+public class InsuranceTypeServiceImpl implements InsuranceTypesService {
 
     @Autowired
     private InsuranceTypeDao dao;

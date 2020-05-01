@@ -10,7 +10,7 @@ import com.vibs_backend.vibs.dao.AutoUsageDao;
 import com.vibs_backend.vibs.domain.AutoUsage;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.service.IAutoUsageService;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,7 +32,7 @@ public class AutoUsageController {
     @Autowired
     private AutoUsageDao auDao;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
 
     @PostMapping(value = "/general/autousages/save", consumes = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Object> createGeneral(@RequestBody AutoUsage au, HttpServletRequest request) {

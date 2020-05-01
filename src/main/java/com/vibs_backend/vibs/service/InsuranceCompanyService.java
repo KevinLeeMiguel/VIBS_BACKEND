@@ -7,7 +7,7 @@ import com.vibs_backend.vibs.domain.InsuranceCompany;
 
 
 
-public interface IinsuranceCompanyService {
+public interface InsuranceCompanyService {
      InsuranceCompany create(InsuranceCompany ic);
      InsuranceCompany delete(InsuranceCompany ic);
      InsuranceCompany update(InsuranceCompany ic);

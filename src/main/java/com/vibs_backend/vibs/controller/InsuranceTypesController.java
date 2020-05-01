@@ -8,8 +8,8 @@ import javax.servlet.http.HttpServletRequest;
 import com.vibs_backend.vibs.dao.InsuranceTypeDao;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
 import com.vibs_backend.vibs.domain.InsuranceType;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
-import com.vibs_backend.vibs.service.IinsuranceTypesService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceTypesService;
 import com.vibs_backend.vibs.utilities.ResponseBean;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,15 +21,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.GetMapping;
 
-
 @RestController
 public class InsuranceTypesController {
     @Autowired
-    private IinsuranceTypesService itypeService;
+    private InsuranceTypesService itypeService;
     @Autowired
     private InsuranceTypeDao itypeDao;
     @Autowired
-    private IinsuranceCompanyService icService;
+    private InsuranceCompanyService icService;
 
     @PostMapping(value = "/general/insuranceTypes/save")
     public ResponseEntity<Object> createGeneral(@RequestBody InsuranceType iType,HttpServletRequest request) {

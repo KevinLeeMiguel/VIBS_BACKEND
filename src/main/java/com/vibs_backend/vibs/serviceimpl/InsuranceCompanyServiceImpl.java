@@ -5,13 +5,13 @@ import java.util.Optional;
 
 import com.vibs_backend.vibs.dao.InsuranceCompanyDao;
 import com.vibs_backend.vibs.domain.InsuranceCompany;
-import com.vibs_backend.vibs.service.IinsuranceCompanyService;
+import com.vibs_backend.vibs.service.InsuranceCompanyService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
-public class InsuranceCompanyServiceImpl implements IinsuranceCompanyService {
+public class InsuranceCompanyServiceImpl implements InsuranceCompanyService {
 
     @Autowired
     private InsuranceCompanyDao dao;
@@ -34,8 +34,7 @@ public class InsuranceCompanyServiceImpl implements IinsuranceCompanyService {
 
     @Override
     public Optional<InsuranceCompany> findOne(String id) {
-        Optional<InsuranceCompany> ic = dao.findById(id);
-        return ic;
+        return dao.findById(id);
     }
 
     @Override
