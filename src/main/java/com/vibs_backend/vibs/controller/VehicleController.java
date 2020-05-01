@@ -376,11 +376,14 @@ public class VehicleController {
             String filename = file.getOriginalFilename();
             if (!f.exists())
                 f.mkdir();
-            File sub = new File(f, "Carte_Jaunes/"+ id + '/');
+            File sub = new File(f, "Carte_Jaunes");
             if (!sub.exists())
                 sub.mkdir();
+            File sub1 = new File(sub,id);
+            if(!sub1.exists())
+                sub1.mkdir();
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(sub.getPath() + "/" + filename);
+            Path path = Paths.get(sub1.getPath() + "/" + filename);
             Files.write(path, bytes);
             return path;
         } catch (Exception e) {
@@ -396,11 +399,14 @@ public class VehicleController {
             String filename = file.getOriginalFilename();
             if (!f.exists())
                 f.mkdir();
-            File sub = new File(f, "vehicles/"+ vehicleUuid + '/');
+            File sub = new File(f, "vehicles");
             if (!sub.exists())
                 sub.mkdir();
+            File sub1 = new File(sub,vehicleUuid);
+            if(!sub1.exists())
+                sub1.mkdir();
             byte[] bytes = file.getBytes();
-            Path path = Paths.get(sub.getPath() + "/" + filename);
+            Path path = Paths.get(sub1.getPath() + "/" + filename);
             Files.write(path, bytes);
             return path;
         } catch (Exception e) {
