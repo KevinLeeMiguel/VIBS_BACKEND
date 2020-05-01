@@ -7,7 +7,6 @@ import com.vibs_backend.vibs.domain.CollectionHistory;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 
 public interface CollectionHistoryDao extends JpaRepository<CollectionHistory,String> {
     

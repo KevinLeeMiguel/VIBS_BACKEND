@@ -240,7 +240,6 @@ public class VehicleController {
             HttpServletRequest request) {
         ResponseBean rs = new ResponseBean();
         try {
-            String username = request.getHeader("doneBy");
             Optional<Vehicle> ico = vehicleService.findById(id);
             if (ico.isPresent()) {
                 Object u1 = upLoad(image1);
@@ -278,7 +277,6 @@ public class VehicleController {
                 rs.setObject(null);
             }
         } catch (Exception e) {
-            e.printStackTrace();
             rs.setCode(500);
             rs.setDescription("Error occurred while saving the  Vehicle");
             rs.setObject(null);

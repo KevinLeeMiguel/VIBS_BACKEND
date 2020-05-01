@@ -1,6 +1,5 @@
 package com.vibs_backend.vibs.controller;
 
-import org.hibernate.validator.internal.util.privilegedactions.GetMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Date;
